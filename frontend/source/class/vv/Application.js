@@ -10,15 +10,15 @@
 
 /* ************************************************************************
 
-#asset(pws/css/styles.css)
+#asset(vv/css/styles.css)
 #asset(qx/mobile/icon/android/*)
 #asset(qx/mobile/icon/ios/*)
 ************************************************************************ */
 
 /**
- * This is the main application class of your custom application "pws"
+ * This is the main application class of your custom application "vv"
  */
-qx.Class.define("pws.Application",{
+qx.Class.define("vv.Application",{
     extend : qx.application.Mobile,
     members : {
         main : function() {
@@ -37,7 +37,7 @@ qx.Class.define("pws.Application",{
                 // support additional cross-browser console. Press F7 to toggle visibility
                 qx.log.appender.Console;
             }
-            (new pws.Login()).show();
+            (new vv.Login()).show();
         }        
     }
 });

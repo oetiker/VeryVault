@@ -1,5 +1,5 @@
 {
-  "name"    : "pws",
+  "name"    : "vv",
 
   "include" :
   [
@@ -59,7 +59,7 @@
       
       "environment" :
       {
-        "qx.version"     : "1.5",
+        "qx.version"     : "1.6",
         "qx.application" : "${APPLICATION}.Application",
         "qx.mobile.emulatetouch" : true,
         "qx.mobile.nativescroll" : false,

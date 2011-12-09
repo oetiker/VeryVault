@@ -14,9 +14,9 @@
 ************************************************************************ */
 
 /**
- * This is the main application class of your custom application "pws"
+ * This is the main application class of your custom application "vv"
  */
-qx.Class.define("pws.Sjcl",{
+qx.Class.define("vv.Sjcl",{
     extend : qx.core.Object,
     type: 'singleton',
     members : {

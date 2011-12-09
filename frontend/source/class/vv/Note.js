@@ -9,9 +9,9 @@
 ************************************************************************ */
 
 /**
- * This is the main application class of your custom application "pws"
+ * This is the main application class of your custom application "vv"
  */
-qx.Class.define("pws.Note",{
+qx.Class.define("vv.Note",{
     extend : qx.ui.mobile.page.NavigationPage,
     construct: function(){
         this.base(arguments);
@@ -68,7 +68,7 @@ qx.Class.define("pws.Note",{
         saveNote: function(e){
             this.__controller.updateModel();
             var model = this.__model;
-            var vault = pws.Vault.getInstance();
+            var vault = vv.Vault.getInstance();
             if (this.__form.validate()) {
                 var key = vault.saveNote({
                     key: this.getKey(),
@@ -84,7 +84,7 @@ qx.Class.define("pws.Note",{
         deleteNote: function(e){
             var key = this.getKey();
             if (key){
-                var vault = pws.Vault.getInstance();            
+                var vault = vv.Vault.getInstance();            
                 vault.removeNoteByKey(key);
             }
             this.back();
@@ -96,7 +96,7 @@ qx.Class.define("pws.Note",{
 //          this.__form.getValidationManager().reset();         
             var key = this.getKey();
             if (key){
-                var note = pws.Vault.getInstance().getNoteByKey(key);
+                var note = vv.Vault.getInstance().getNoteByKey(key);
                 model.set({
                     body: note.body,
                     subject: note.subject

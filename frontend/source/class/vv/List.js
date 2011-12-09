@@ -10,13 +10,13 @@
 ************************************************************************ */
 
 /**
- * This is the main application class of your custom application "pws"
+ * This is the main application class of your custom application "vv"
  */
-qx.Class.define("pws.List",{
+qx.Class.define("vv.List",{
     extend : qx.ui.mobile.page.NavigationPage,
     construct: function(){
         this.__model = new qx.data.Array();
-        var notePage = this.__notePage = new pws.Note();
+        var notePage = this.__notePage = new vv.Note();
 
         this.base(arguments);
         this.set({
@@ -64,7 +64,7 @@ qx.Class.define("pws.List",{
             this.getContent().add(list);            
         },
         _fillList: function(){
-            var vault = pws.Vault.getInstance();
+            var vault = vv.Vault.getInstance();
             var model = this.__model; 
             model.removeAll();           
             var len = vault.countNotes();

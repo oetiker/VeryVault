@@ -9,9 +9,9 @@
 ************************************************************************ */
 
 /**
- * This is the main application class of your custom application "pws"
+ * This is the main application class of your custom application "vv"
  */
-qx.Class.define("pws.AppCacheStatus",{
+qx.Class.define("vv.AppCacheStatus",{
     extend : qx.ui.mobile.form.Title,
 
     construct: function(button){

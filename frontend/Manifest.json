@@ -1,24 +1,24 @@
 {
   "info" : 
   {
-    "name" : "pws",
+    "name" : "vv",
 
-    "summary" : "Custom Mobile Application",
-    "description" : "This is a skeleton for a custom mobile application with qooxdoo.",
+    "summary" : "VeryVault",
+    "description" : "Private Encrypted Mobile Notes App",
     
-    "homepage" : "http://some.homepage.url/",
+    "homepage" : "http://www.verycault.org/",
 
-    "license" : "SomeLicense",
+    "license" : "GPLv3",
     "authors" : 
     [
       {
-        "name" : "First Author (uid)",
-        "email" : "first.author@some.domain"
+        "name" : "Tobias Oetker (oetiker)",
+        "email" : "tobi@oetiker.ch"
       }
     ],
 
     "version" : "trunk",
-    "qooxdoo-versions": ["1.5"]
+    "qooxdoo-versions": ["1.6"]
   },
   
   "provides" : 

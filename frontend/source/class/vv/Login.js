@@ -9,9 +9,9 @@
 ************************************************************************ */
 
 /**
- * This is the main application class of your custom application "pws"
+ * This is the main application class of your custom application "vv"
  */
-qx.Class.define("pws.Login",{
+qx.Class.define("vv.Login",{
     extend : qx.ui.mobile.page.NavigationPage,
 
     construct: function(){
@@ -29,7 +29,7 @@ qx.Class.define("pws.Login",{
         __clearBtn: null,
         __status: null,
         _setupPage: function() {
-            var vault = pws.Vault.getInstance();
+            var vault = vv.Vault.getInstance();
             var initStore = vault.countNotes() == 0;
 
             var form = this.__form = new qx.ui.mobile.form.Form();
@@ -66,14 +66,14 @@ qx.Class.define("pws.Login",{
             var content = this.getContent();
             content.add(new qx.ui.mobile.form.renderer.SinglePlaceholder(form));
             content.add(login);            
-            this.__status = new pws.AppCacheStatus(login);
+            this.__status = new vv.AppCacheStatus(login);
             content.add(this.__status);
             var clear = this.__clearBtn = new qx.ui.mobile.form.Button("Delete existing Notes").set({
                 visibility: 'excluded'
             });
             content.add(clear);
             clear.addListener("tap",function(){
-                pws.Vault.getInstance().removeAll();                
+                vv.Vault.getInstance().removeAll();                
                 location.reload();
             },this);
         },
@@ -84,7 +84,7 @@ qx.Class.define("pws.Login",{
             this.__controller.updateModel();            
             if (this.__form.validate()){                    
                 var pass = this.__model.getPassword();
-                var vault = pws.Vault.getInstance();
+                var vault = vv.Vault.getInstance();
                 vault.login(pass);
                 try {
                     if (vault.countNotes() > 0){
@@ -101,7 +101,7 @@ qx.Class.define("pws.Login",{
                     return;
                 }
                 // do not keep this pw around too long
-                var listPage = new pws.List();
+                var listPage = new vv.List();
                 listPage.show();
             }
         }
