@@ -33,7 +33,7 @@
 
   "let" :
   {
-    "APPLICATION"  : "pws",
+    "APPLICATION"  : "vv",
     "QOOXDOO_PATH" : "../../../../../usr/pack/qooxdoo-1.5-za/frontend",
     "LOCALES"      : [ "en" ],
     "CACHE"        : "${TMPDIR}/qx${QOOXDOO_VERSION}/cache",
