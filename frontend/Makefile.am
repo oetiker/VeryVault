@@ -22,7 +22,7 @@ if BUILD_QOOXDOO_APP
 
 .PHONY: source lint pretty
 
-source: source/script/ep.js
+source: source/script/vv.js
 
 lint:
 	$(QOOXDOO_PATH)/tool/bin/generator.py -m QOOXDOO_PATH:$(QOOXDOO_PATH) -m CACHE:./cache lint
@@ -30,11 +30,11 @@ lint:
 pretty:
 	$(QOOXDOO_PATH)/tool/bin/generator.py -m QOOXDOO_PATH:$(QOOXDOO_PATH) -m CACHE:./cache pretty
 	
-source/script/ep.js: $(shell find source/class/ -name "*.js")
+source/script/vv.js: $(shell find source/class/ -name "*.js")
 	$(QOOXDOO_PATH)/tool/bin/generator.py -m QOOXDOO_PATH:$(QOOXDOO_PATH) -m CACHE:./cache source
 
 endif
 
 clean-local:
 	test -d ./cache && rm -r ./cache || true
-	test -f source/script/ep.js && rm source/script/* || true
+	test -f source/script/vv.js && rm source/script/* || true

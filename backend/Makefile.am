@@ -16,8 +16,8 @@
 
 AUTOMAKE_OPTIONS =  foreign
 
-ETC = etc/extopus.cfg.dist
-BIN = bin/ep.pl bin/run.sh bin/siamdumper.pl
+ETC = etc/vv.cfg.dist
+BIN = bin/vv.pl
 
 PM :=  $(shell find lib/ -name "*.pm")
 
@@ -25,7 +25,7 @@ RES :=  $(shell test -d public/resource && find public/resource -type f)
 
 TEMPL := $(shell test -d templates && find templates -type f)
 
-PUB = public/script/ep.js public/index.html $(RES)
+PUB = public/script/vv.js public/index.html $(RES)
 
 EXTRA_DIST = $(wildcard t/*.t) $(ETC) $(BIN) $(PM) $(PUB) $(TEMPL)
 
@@ -39,7 +39,7 @@ dist_bin_SCRIPTS = $(BIN)
 
 if BUILD_QOOXDOO_APP
 
-public/script/ep.js: $(shell find ../frontend/source/class/ep -name "*.js") $(QOOXDOO_PATH)/framework/config.json
+public/script/vv.js: $(shell find ../frontend/source/class/vv -name "*.js") $(QOOXDOO_PATH)/framework/config.json
 	cd ../frontend && $(QOOXDOO_PATH)/tool/bin/generator.py -m QOOXDOO_PATH:$(QOOXDOO_PATH) -m CACHE:./cache -m BUILD_PATH:../backend/public build
          
 endif
@@ -49,12 +49,12 @@ install-exec-hook:
         
         
 dist-hook:
-	$(PERL) -i -p -e '"$(PACKAGE_VERSION)" =~ /(\d+)\.(\d+)\.(\d+)/ and $$v = sprintf("%d.%03d%03d",$$1,$$2,$$3) and s/^\$$VERSION\s+=\s+".+?"/\$$VERSION = "$$d"/;'  $(distdir)/lib/EP.pm
-	$(PERL) -i -p -e "s/#VERSION#/$(PACKAGE_VERSION)/g;s/#YEAR#/$(YEAR)/g;" $(distdir)/public/script/ep.js
+	$(PERL) -i -p -e '"$(PACKAGE_VERSION)" =~ /(\d+)\.(\d+)\.(\d+)/ and $$v = sprintf("%d.%03d%03d",$$1,$$2,$$3) and s/^\$$VERSION\s+=\s+".+?"/\$$VERSION = "$$d"/;'  $(distdir)/lib/VV.pm
+	$(PERL) -i -p -e "s/#VERSION#/$(PACKAGE_VERSION)/g;s/#YEAR#/$(YEAR)/g;" $(distdir)/public/script/vv.js
 
 install-data-local:
 	mkdir -p $(DESTDIR)$(HTDOCSDIR)
 	echo "#!/bin/sh" > $(DESTDIR)$(HTDOCSDIR)/index.fcgi.dist
-	echo "export EXTOPUS_CONF=$(prefix)/etc/extopus.cfg" >> $(DESTDIR)$(HTDOCSDIR)/index.fcgi.dist
-	echo "$(prefix)/bin/ep.pl fastcgi" >> $(DESTDIR)$(HTDOCSDIR)/index.fcgi.dist
+	echo "export VERYVAULT_CONF=$(prefix)/etc/vv.cfg" >> $(DESTDIR)$(HTDOCSDIR)/index.fcgi.dist
+	echo "$(prefix)/bin/vv.pl fastcgi" >> $(DESTDIR)$(HTDOCSDIR)/index.fcgi.dist
 	chmod +x $(DESTDIR)$(HTDOCSDIR)/index.fcgi.dist
