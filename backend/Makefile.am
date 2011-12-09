@@ -25,9 +25,10 @@ RES :=  $(shell test -d public/resource && find public/resource -type f)
 
 TEMPL := $(shell test -d templates && find templates -type f)
 
-PUB = public/script/vv.js public/index.html $(RES)
+PUB = public/script/vv.js public/index.html $(RES) public/offline.manifest public/.htaccess
 
 EXTRA_DIST = $(wildcard t/*.t) $(ETC) $(BIN) $(PM) $(PUB) $(TEMPL)
+
 
 YEAR := $(shell date +%Y)
 DATE := $(shell date +%Y-%m-%d)
@@ -38,6 +39,12 @@ nobase_data_DATA = $(PM) $(PUB) $(ETC) $(TEMPL)
 dist_bin_SCRIPTS = $(BIN)
 
 if BUILD_QOOXDOO_APP
+
+public/.htaccess:
+	echo "AddType text/cache-manifest .manifest" > public/.htaccess
+
+public/offline.manifest: $(PUB)
+	cd public && ( echo CACHE MANIFEST; find -type f | grep -q .htaccess | grep -q offline.manifest | sed -e 's/^\.\///' ) > offline.manifest
 
 public/script/vv.js: $(shell find ../frontend/source/class/vv -name "*.js") $(QOOXDOO_PATH)/framework/config.json
 	cd ../frontend && $(QOOXDOO_PATH)/tool/bin/generator.py -m QOOXDOO_PATH:$(QOOXDOO_PATH) -m CACHE:./cache -m BUILD_PATH:../backend/public build

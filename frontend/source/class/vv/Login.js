@@ -17,7 +17,7 @@ qx.Class.define("vv.Login",{
     construct: function(){
         this.base(arguments);
         this.set({
-            title: "Secure Notes"
+            title: "VeryVault"
         });
         this.addListener("initialize", this._setupPage,this);
     },
