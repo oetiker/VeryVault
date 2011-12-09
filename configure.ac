@@ -87,13 +87,7 @@ if test "$enable_pkgonly" != yes; then
      Mojolicious \
      MojoX::Dispatcher::Qooxdoo::Jsonrpc \
      Mojo::Server::FastCGI \
-     Config::Grammar \
-     SIAM \
-     DBD::SQLite \
-     JSON::XS \
-     Mojo::JSON::Any \
-     Excel::Writer::XLSX  \   
-     Spreadsheet::WriteExcel
+     Config::Grammar
    do 
      AC_MSG_CHECKING([checking for perl module '$module'])
      if ${PERL} -I$prfx/thirdparty/lib/perl5 -e 'use '$module 2>/dev/null ; then
