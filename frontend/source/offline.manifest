@@ -1,0 +1,21 @@
+CACHE MANIFEST
+script/pws.js
+resource/pws/css/styles.css
+resource/qx/mobile/css/ios/ios.css
+resource/qx/mobile/css/common/main.css
+resource/qx/mobile/css/android/android.css
+resource/qx/mobile/icon/ios/pinstripes.png
+resource/qx/mobile/icon/ios/arrow_pressed.png
+resource/qx/mobile/icon/ios/checkbox.png
+resource/qx/mobile/icon/ios/loading.png
+resource/qx/mobile/icon/ios/toolButton_pressed.png
+resource/qx/mobile/icon/ios/scrollbar.png
+resource/qx/mobile/icon/ios/on_off.png
+resource/qx/mobile/icon/ios/toolButton.png
+resource/qx/mobile/icon/ios/arrow.png
+resource/qx/mobile/icon/ios/backButton.png
+resource/qx/mobile/icon/ios/cancel.png
+resource/qx/mobile/icon/ios/backButton_pressed.png
+resource/qx/mobile/js/iscroll-debug.js
+resource/qx/mobile/js/iscroll.js
+

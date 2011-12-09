@@ -1,0 +1,2 @@
+ExpiresByType text/cache-manifest "access plus 0 seconds"
+AddType text/cache-manifest manifest
