@@ -46,18 +46,19 @@ public/.htaccess:
 public/offline.manifest: $(PUB)
 	cd public && ( echo CACHE MANIFEST; find -type f | grep -q .htaccess | grep -q offline.manifest | sed -e 's/^\.\///' ) > offline.manifest
 
-public/script/vv.js: $(shell find ../frontend/source/class/vv -name "*.js") $(QOOXDOO_PATH)/framework/config.json
+public/script/vv.js: $(shell find ../frontend/source/class/vv -name "*.js") $(QOOXDOO_PATH)/framework/config.json ../configure
 	cd ../frontend && $(QOOXDOO_PATH)/tool/bin/generator.py -m QOOXDOO_PATH:$(QOOXDOO_PATH) -m CACHE:./cache -m BUILD_PATH:../backend/public build
+	$(PERL) -i -p -e 's/#VERSION#/$(PACKAGE_VERSION)/g;s/#YEAR#/$(YEAR)/g;s/#DATE#/$(DATE)/g;' public/index.html public/script/$(QX_CLASS).js
          
 endif
          
 install-exec-hook:
 	[ x$PERL5LIB != x ] && cd "$(DESTDIR)$(bindir)" && $(PERL) -i -p -e 's{^#!.*perl.*}{#!$(PERL)}; s{.*# PERL5LIB}{use lib qw($(PERL5LIB)); # PERL5LIB}' $(dist_bin_SCRIPTS)
-        
+	cd "$(DESTDIR)$(bindir)" && $(PERL) -i -p -e 's{^#!.*perl.*}{#!$(PERL)};' *.pl
+         
         
 dist-hook:
 	$(PERL) -i -p -e '"$(PACKAGE_VERSION)" =~ /(\d+)\.(\d+)\.(\d+)/ and $$v = sprintf("%d.%03d%03d",$$1,$$2,$$3) and s/^\$$VERSION\s+=\s+".+?"/\$$VERSION = "$$d"/;'  $(distdir)/lib/VV.pm
-	$(PERL) -i -p -e "s/#VERSION#/$(PACKAGE_VERSION)/g;s/#YEAR#/$(YEAR)/g;" $(distdir)/public/script/vv.js
 
 install-data-local:
 	mkdir -p $(DESTDIR)$(HTDOCSDIR)
