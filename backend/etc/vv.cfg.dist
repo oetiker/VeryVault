@@ -1,0 +1,79 @@
+*** general ***
+listen = http://*:34945
+
+*** ITEM:password ***
+
+icon = apps/preferences-security
+name = Passwords
+# public_access = rw | ro | no (default)
+shared_access = no
+encrypt = yes
+# the item object holds all the items elements
+# for encrypted items the element content will be replaces
+# by *** while the decryption key is not entered ...
+# when you try to open an item you will be prompted for the key
+# until the right key is provided
+label_js = item.title
+
++FIELD:title
+
+label = Title
+type = text
+
++FIELD:login
+
+label = Login
+type = text
+
++FIELD:password
+
+label = Password
+type = text
+
++FIELD:note
+
+label = Note
+type = textarea
+optional = yes
+
+*** ITEM:time
+
+icon = apps/preferences-clock
+name = Time Tracker
+shared_access = ro
+
++FIELD:job
+
+label = Job
+type = text
+
++FIELD:time
+
+label = Timer
+type = timer  
+
+*** ITEM:smart
+
+item = categories/system
+name = SMART Track
+shared_access = ro
+
++FIELD:date
+
+label = date
+type = date
+
++FIELD:who
+type = select
+values = ok;oe;st;ge;fz;to;mo;rp;rw
+label = Who
+
++FIELD:dest
+type = text
+label = Where
+
++FIELD:dist
+type = text
+label = Distance (km)
+
+   
