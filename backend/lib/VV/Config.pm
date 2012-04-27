@@ -47,6 +47,25 @@ sub parse_config {
     my $cfg_file = shift;
     my $parser = $self->_make_parser();
     my $cfg = $parser->parse($self->file) or croak($parser->{err});
+    my %ret;
+    for my $item ( sort { $cfg->{$a}{_order} <=> $cfg->{$b}{_order} } keys %$cfg ) {
+        next if not $item =~ /ITEM:(\S+)/;
+        my $itemKey = $1;
+        my $itemCfg = $cfg->{$item};
+        push @{$ret{itemList}}, $itemKey;
+        for my $key (qw(icon name shared_access encrypt lable_js)){
+             $ret{items}{$itemKey}{$key} = $itemCfg->{$key};
+        }
+        for my $field ( sort { $itemCfg->{$a}{_order} <=> $itemCfg->{$b}{_order} } keys %$itemCfg ) {
+            next if not $field =~ /FIELD:(\S+)/;
+            my $fieldKey = $1;
+            my $fieldCfg = $itemCfg->{$field};
+            push @{$ret{items}{$itemKey}{fieldList}}, $fieldKey;
+            $ret{items}{$itemKey}{fields}{$fieldKey} = $fieldCfg;
+        }
+        delete $cfg->{$item};
+    }
+    $cfg->{DATA} = \%ret;
     return $cfg;
 }
 
@@ -263,7 +282,19 @@ sub _make_parser {
                     _re => '(yes|no)',
                     _re_error => 'choose yes or now',
                     _default => 'no'
-                }                                
+                },
+                cfg_pl => {
+                    _doc => 'widget dependent perl fragment with configuration information',
+                    _sub => sub {
+                        my $c = eval 'sub { '.$_[0].'}'; 
+                        if ($@){ 
+                            return "Failed to compile $_[0]" 
+                        } else { 
+                            $_[0] = $c 
+                        } 
+                        return undef;
+                    }
+                }
             }
         }
     };
