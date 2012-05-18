@@ -53,7 +53,7 @@ sub parse_config {
         my $itemKey = $1;
         my $itemCfg = $cfg->{$item};
         push @{$ret{itemList}}, $itemKey;
-        for my $key (qw(icon name shared_access encrypt lable_js)){
+        for my $key (qw(icon name shared_access lable_js)){
              $ret{items}{$itemKey}{$key} = $itemCfg->{$key};
         }
         for my $field ( sort { $itemCfg->{$a}{_order} <=> $itemCfg->{$b}{_order} } keys %$itemCfg ) {
@@ -142,11 +142,10 @@ ${E}head1 SYNOPSIS
 
  icon = apps/preferences-security
  name = Passwords
- # public_access = rw | ro | no (default)
+ # public_access = rw | ro | cr | no (default)
  shared_access = no
- encrypt = yes
  # the item object holds all the items elements
- # for encrypted items the element content will be replaces
+ # for encrypted (cr) items the element content will be replaces
  # by *** while the decryption key is not entered ...
  # when you try to open an item you will be prompted for the key
  # until the right key is provided
@@ -250,17 +249,10 @@ sub _make_parser {
             name => { _doc => 'what to call items of this type' },
             shared_access => { 
                 _doc => 'should other users get access to these items',
-                _re => '(ro|rw|no)',
+                _re => '(ro|rw|cr|no)',
                 _default => 'no',
                 _example => 'ro',
-                _re_error => 'pick one of ro, rw or no'
-            },
-            encrypt =>  { 
-                _doc => 'enrypt these items',
-                _re => '(yes|no)',
-                _default => 'no',
-                _example => 'yes',
-                _re_error => 'pick one of yes or no'
+                _re_error => 'pick one of cr, ro, rw or no'
             },
             lable_js => {
                 _doc => 'Java Script expression used to build the content of the label in the item overview. The item object is called item',

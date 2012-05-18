@@ -5,11 +5,10 @@ listen = http://*:34945
 
 icon = apps/preferences-security
 name = Passwords
-# public_access = rw | ro | no (default)
-shared_access = no
-encrypt = yes
+# shared_access = rw | ro | cr | no (default)
+shared_access = cr
 # the item object holds all the items elements
-# for encrypted items the element content will be replaces
+# for encrypted (cr) items the element content will be replaces
 # by *** while the decryption key is not entered ...
 # when you try to open an item you will be prompted for the key
 # until the right key is provided
