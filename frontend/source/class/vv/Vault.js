@@ -5,56 +5,68 @@
    Utf8Check: äöü
 ************************************************************************ */
 
-/* ************************************************************************
-************************************************************************ */
-
 /**
- * This is the main application class of your custom application "vv"
+ * The Vault uses SJCL to encryp and decrypt data as it goes to the localStore of
+ * the webbrowser. This module throws exceptions if it is unhappy.
  */
 
 // realy make this private
-var pass;
-
+var data;
+var key;
 qx.Class.define("vv.Vault",{
     extend : qx.core.Object,
     type: 'singleton',
-    
+    construct: function(){
+        data = [];
+        key = null;
+        if (!localStorage){
+            throw new Error("this browser does not support localStorage");
+        }
+    },
     members : {
-        login: function(p){
-            pass = p;
+        __storeName: "VeryVaultStore",
+        setKey: function(p){
+            key = p;
+            this.__loadStore();
         },
-        countNotes: function(){
-            return localStorage.length;
-        },
-        getNoteById: function(id){
-            var key = localStorage.key(id);
-            return this.getNoteByKey(key);
-        },
-        getNoteByKey: function(key){
-            var sjcl = vv.Sjcl.getInstance();
-            var note = qx.lang.Json.parse(sjcl.decrypt(pass, localStorage.getItem(key)));
-            return note;
-        },
-        saveNote: function(note){
-            var sjcl = vv.Sjcl.getInstance();
-            note.update = new Date().getTime();
-            if (! note.key){
-                note.key = 'vv.' + sjcl.hash(note.subject + note.body + note.update);
+        gotData: function (){
+            return localStorage.getItem(this.__storeName) != null
+        }
+        setData: function (){
+            if (!key){
+                throw new Error("Key is not set. Can't store data.");
             }
-            localStorage.setItem(note.key,sjcl.encrypt(pass,qx.lang.Json.stringify(note)));
-            return note.key;
+            var sjcl = vv.Sjcl.getInstance();        
+            localStorage.setItem(
+                this.__storeName,
+                sjcl.encrypt(
+                    key,
+                    qx.lang.Json.stringify(data)
+                )
+            );
         },
-        removeNoteByKey: function(key){
-            localStorage.removeItem(key);
-        },
-        removeAll: function(){
-            var len = this.countNotes();
-            for (var i = len-1; i>=0;i--){
-                var key = localStorage.key(i);
-                localStorage.removeItem(key);
-                console.log('removing ' + key);
+        getData: function (){
+            var item = localStorage.getItem(this.__storeName);
+            if (item == null){
+                return data;
+            };
+            if (item && !key){
+                throw new Error("There is local data but no key is set");
             }
-        }        
+            var sjcl = vv.Sjcl.getInstance();
+            return = qx.lang.Json.parse(
+                sjcl.decrypt(key,item)
+            );
+        },
+        clearData: function(){
+            key = null;
+            data = [];
+            localStorage.removeItem(this.__storeName);
+        }
+    },
+    desctruct: function(){
+        key = null;
+        data = null;
     }
 });
 

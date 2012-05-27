@@ -5,12 +5,12 @@ use VV::Exception qw(mkerror);
 
 =head1 NAME
 
-EP::RpcService - RPC services for ep
+VV::RpcService - RPC services for VV
 
 =head1 SYNOPSIS
 
-This module gets instantiated by L<EP::MojoApp> and provides backend functionality for Extopus.
-It relies on an L<EP::Cache> instance for accessing the data.
+This module provides the backend rpc services for VeryVault. See L<VV::Store> for details
+on the storage methods.
 
 =head1 DESCRIPTION
 
@@ -62,7 +62,7 @@ sub allow_rpc_access {
     my $method = shift;
     if ($allow{$method} == 2){
         my $user = $self->controller->session('vvUser');
-        die mkerror(3993,q{Your request has no VeryVaultUserCookie. Please re-connect.}) unless defined $user;
+        die mkerror(3978,q{Your Device is not associated with the VeryVault Server. Please re-associate.}) unless defined $user;
     }
     return $allow{$method}; 
 }
@@ -79,9 +79,9 @@ sub associate {
     my $self = shift;
     my $email = shift;
     my $password = shift;
-    die mkerror(942,q{Provide an email address as your identification}) unless $email =~ /^[^\s\@]+\@[^\s\@]+$/;
-    my $hello_key = $self->app->cfg->{GENERAL}->{hello_key};
-    die mkerror(4453,q{Provide a valid Access Key to associate with VeryVault}) unless $pass eq $hello_key;
+    die mkerror(942,q{Provide your email address as your identification}) unless $email ~~ /^[^\s\@]+\@[^\s\@]+$/;
+    my $hello_key = $self->app->cfg->{HELLO}{$email};
+    die mkerror(4453,q{Provide a valid Access Key to associate with VeryVault}) unless $pass ~~ $hello_key;
     $self->controller->session('vvUser',$email);
 }
     

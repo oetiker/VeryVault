@@ -134,9 +134,14 @@ ${E}head1 SYNOPSIS
 
  *** GENERAL ***
  database_dir = /var/lib/vv/database
- cookie_secret = Secret Cookie
+ cookie_secret = Secret Cookie Password
  log_file = /var/log/vv.log
- hello_key = Access Key
+
+ *** HELLO ***
+ # these keys are only used during the association process
+ # they may be removed later
+ tobi@oetiker.ch = MyAssociationKey
+ some@other.user = OtherAssociationKey
 
  *** ITEM:password ***
 
@@ -222,12 +227,12 @@ sub _make_parser {
     my $E = '=';
 
     my $grammar = {
-        _sections => [ qw{GENERAL /ITEM:\s*\S+/ }],
+        _sections => [ qw{GENERAL HELLO /ITEM:\s*\S+/ }],
         _mandatory => [qw(GENERAL)],
         GENERAL => {
             _doc => 'Global configuration settings for VeryVault',
-            _vars => [ qw(database_dir cookie_secret log_file hello_key) ],
-            _mandatory => [ qw( database_dir cookie_secret log_file hello_key) ],
+            _vars => [ qw(database_dir cookie_secret log_file) ],
+            _mandatory => [ qw( database_dir cookie_secret log_file) ],
             _order => 1,
             database_dir => { _doc => 'location to store your VeryVault database',
                 _sub => sub {
@@ -238,7 +243,17 @@ sub _make_parser {
             },
             cookie_secret => { _doc => 'secret for signing mojo cookies' },
             log_file => { _doc => 'write a log file to this location (unless in development mode)'},
-            hello_key => { _doc => 'only talk to registerd entities or those providing the hello_key' },
+        },
+        HELLO => {
+            _doc => <<DOC_END,
+List of association email - key combinations used as user associate their devices with the server.
+The email address, once associated is stored in an encrypted cookie on the users browser.
+If the cookie is lost, the user has to re-associate by providing the secret listed here.
+DOC_END
+            _vars => [ qw(/[^\s\@]+\@[^\s\@]+/) ],
+            '/[^\s\@]+\@[^\s\@]+/' => { 
+                _doc => 'email address associated with a user association key.',
+            },
         },
         '/ITEM:\s*\S+/' => {
             _doc => 'Setup items for storage in the database',

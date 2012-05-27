@@ -1,5 +1,5 @@
 /* ************************************************************************
-   Copyright: 2011 OETIKER+PARTNER AG
+   Copyright: 2012 OETIKER+PARTNER AG
    License:   GPLv3 or later
    Authors:   Tobi Oetiker <tobi@oetiker.ch>
    Utf8Check: äöü
@@ -17,7 +17,7 @@ qx.Class.define("vv.Login",{
     construct: function(){
         this.base(arguments);
         this.set({
-            title: "VeryVault"
+            title: this.tr("VeryVault %1","#VERSION#")
         });
         this.addListener("initialize", this._setupPage,this);
     },

@@ -1,15 +1,12 @@
-/* ************************************************************************
-
-   Copyright:
-
-   License:
-
-   Authors:
+/* ***********************************************************************
+   Copyright: 2011 OETIKER+PARTNER AG
+   License:   GPLv3 or later
+   Authors:   Tobi Oetiker <tobi@oetiker.ch>
+   Utf8Check: äöü
 
 ************************************************************************ */
 
 /* ************************************************************************
-
 #asset(vv/css/styles.css)
 #asset(qx/mobile/icon/android/*)
 #asset(qx/mobile/icon/ios/*)
@@ -24,20 +21,7 @@ qx.Class.define("vv.Application",{
         main : function() {
             // Call super class
             this.base(arguments);
-
-            if (! localStorage ){
-                alert("Application requires localStorage object");
-                return;
-            }
-
-            // Enable logging in debug variant
-            if (qx.core.Environment.get("qx.debug")) {
-                // support native logging capabilities, e.g. Firebug for Firefox
-                qx.log.appender.Native;
-                // support additional cross-browser console. Press F7 to toggle visibility
-                qx.log.appender.Console;
-            }
-            (new vv.Login()).show();
+            new vv.Login().show();
         }        
     }
 });
