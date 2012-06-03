@@ -21,7 +21,11 @@ qx.Class.define("vv.Application",{
         main : function() {
             // Call super class
             this.base(arguments);
-            new vv.Login().show();
+            var cfg = vv.data.Config.getInstance();
+            cfg.addListenerOnce('config',function(e){
+                // build interface
+            },this);
+            cfg.fetch();
         }        
     }
 });

@@ -17,7 +17,7 @@
  * A qooxdoo wrapper for the Stanford Javascript Crypto Library
  * For the original library, see: http://crypto.stanford.edu/sjcl/
  */
-qx.Class.define("vv.Sjcl",{
+qx.Class.define("vv.data.Sjcl",{
     extend : qx.core.Object,
     type: 'singleton',
     members : {

@@ -9,7 +9,7 @@
 /**
  * initialize us an Rpc object with some extra thrills.
  */
-qx.Class.define('vv.Rpc', {
+qx.Class.define('vv.data.Rpc', {
     extend : qx.io.remote.Rpc,
     type : "singleton",
 
@@ -17,7 +17,7 @@ qx.Class.define('vv.Rpc', {
         this.base(arguments);
         this.set({
             timeout     : 15000,
-            url         : 'jsonrpc/',
+            url         : 'jsonrpc',
             serviceName : 'VV'
         });
     },
@@ -34,12 +34,23 @@ qx.Class.define('vv.Rpc', {
          * @param methodName {String} the name of the method to call.
          * @return {var} the method call reference.
          */
-        callAsyncSmart : function(handler, methodName) {
+        callAsyncSmart : function(handler) {
+            var origArguments = arguments;
+            var origThis = this;
             var origHandler = handler;
-
             var superHandler = function(ret, exc, id) {
                 if (exc) {
-                    vv.MsgBox.getInstance().exc(exc);
+                    if (exc.code == 3978){
+                        console.log('not associated');
+                        var pop = vv.popup.Associate.getInstance();
+                        pop.addListenerOnce('associated',function(){
+                            origArguments.callee.apply(origThis, origArguments);
+                        });      
+                        pop.show();
+                    }
+                    else {
+                        vv.popup.MsgBox.getInstance().exc(exc);
+                    } 
                 } else {
                     origHandler(ret);
                 }

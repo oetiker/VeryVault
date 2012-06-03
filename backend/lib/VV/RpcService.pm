@@ -36,7 +36,7 @@ has 'store' => sub {
     VV::Store->new(
         cfg=>$_[0]->app->cfg
     );
-}
+};
 
 =pod
 
@@ -81,8 +81,9 @@ sub associate {
     my $password = shift;
     die mkerror(942,q{Provide your email address as your identification}) unless $email ~~ /^[^\s\@]+\@[^\s\@]+$/;
     my $hello_key = $self->app->cfg->{HELLO}{$email};
-    die mkerror(4453,q{Provide a valid Access Key to associate with VeryVault}) unless $pass ~~ $hello_key;
+    die mkerror(4453,q{Provide a valid Access Key to associate with VeryVault}) unless $password ~~ $hello_key;
     $self->controller->session('vvUser',$email);
+    return 'associated';
 }
     
 

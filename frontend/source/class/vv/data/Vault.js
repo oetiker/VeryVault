@@ -13,10 +13,11 @@
 // realy make this private
 var data;
 var key;
-qx.Class.define("vv.Vault",{
+qx.Class.define("vv.data.Vault",{
     extend : qx.core.Object,
     type: 'singleton',
     construct: function(){
+        this.base(arguments);
         data = [];
         key = null;
         if (!localStorage){
@@ -31,7 +32,7 @@ qx.Class.define("vv.Vault",{
         },
         gotData: function (){
             return localStorage.getItem(this.__storeName) != null
-        }
+        },
         setData: function (){
             if (!key){
                 throw new Error("Key is not set. Can't store data.");
@@ -54,7 +55,7 @@ qx.Class.define("vv.Vault",{
                 throw new Error("There is local data but no key is set");
             }
             var sjcl = vv.Sjcl.getInstance();
-            return = qx.lang.Json.parse(
+            return qx.lang.Json.parse(
                 sjcl.decrypt(key,item)
             );
         },

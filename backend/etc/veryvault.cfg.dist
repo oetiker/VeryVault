@@ -1,5 +1,11 @@
-*** general ***
-listen = http://*:34945
+*** GENERAL ***
+
+database_dir = /scratch/vv/database
+cookie_secret = Secret Cookie Password
+log_file = /scratch/vv/vv.log
+
+*** HELLO ***
+some@address = test
 
 *** ITEM:password ***
 
@@ -35,7 +41,7 @@ label = Note
 type = textarea
 optional = yes
 
-*** ITEM:time
+*** ITEM:time ***
 
 icon = apps/preferences-clock
 name = Time Tracker
@@ -49,11 +55,11 @@ type = text
 +FIELD:time
 
 label = Timer
-type = timer  
+type = timer
 
-*** ITEM:smart
+*** ITEM:smart ***
 
-item = categories/system
+icon = categories/system
 name = SMART Track
 shared_access = ro
 
@@ -64,7 +70,7 @@ type = date
 
 +FIELD:who
 type = select
-values = ok;oe;st;ge;fz;to;mo;rp;rw
+cfg_pl = [ qw( ok oe st ge fz to mo rp rw) ]
 label = Who
 
 +FIELD:dest

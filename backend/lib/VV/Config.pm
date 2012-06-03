@@ -48,7 +48,7 @@ sub parse_config {
     my $parser = $self->_make_parser();
     my $cfg = $parser->parse($self->file) or croak($parser->{err});
     my %ret;
-    for my $item ( sort { $cfg->{$a}{_order} <=> $cfg->{$b}{_order} } keys %$cfg ) {
+    for my $item ( sort { $cfg->{$a}{_order} <=> $cfg->{$b}{_order} } grep /^ITEM:/, keys %$cfg ) {
         next if not $item =~ /ITEM:(\S+)/;
         my $itemKey = $1;
         my $itemCfg = $cfg->{$item};
@@ -56,7 +56,7 @@ sub parse_config {
         for my $key (qw(icon name shared_access lable_js)){
              $ret{items}{$itemKey}{$key} = $itemCfg->{$key};
         }
-        for my $field ( sort { $itemCfg->{$a}{_order} <=> $itemCfg->{$b}{_order} } keys %$itemCfg ) {
+        for my $field ( sort { $itemCfg->{$a}{_order} <=> $itemCfg->{$b}{_order} } grep /^FIELD:/, keys %$itemCfg ) {
             next if not $field =~ /FIELD:(\S+)/;
             my $fieldKey = $1;
             my $fieldCfg = $itemCfg->{$field};
@@ -140,8 +140,8 @@ ${E}head1 SYNOPSIS
  *** HELLO ***
  # these keys are only used during the association process
  # they may be removed later
- tobi@oetiker.ch = MyAssociationKey
- some@other.user = OtherAssociationKey
+ tobi\@oetiker.ch = MyAssociationKey
+ some\@other.user = OtherAssociationKey
 
  *** ITEM:password ***
 
@@ -233,12 +233,12 @@ sub _make_parser {
             _doc => 'Global configuration settings for VeryVault',
             _vars => [ qw(database_dir cookie_secret log_file) ],
             _mandatory => [ qw( database_dir cookie_secret log_file) ],
-            _order => 1,
             database_dir => { _doc => 'location to store your VeryVault database',
                 _sub => sub {
                     if ( not -d $_[0] ){
                         return "Cache directory $_[0] does not exist";
                     }
+                    return undef;
                 }
             },
             cookie_secret => { _doc => 'secret for signing mojo cookies' },
@@ -257,7 +257,8 @@ DOC_END
         },
         '/ITEM:\s*\S+/' => {
             _doc => 'Setup items for storage in the database',
-            _vars => [ qw(icon name shared_acces encrypt /FIELD:\s*\S+/ ) ],
+            _vars => [ qw(icon name shared_access label_js) ],
+            _sections => [ qw(/FIELD:\s*\S+/) ],
             _order => 1,
             _madatory => [ qw(name) ],
             icon => { _doc => 'which icon to associate with the item' },
@@ -269,18 +270,19 @@ DOC_END
                 _example => 'ro',
                 _re_error => 'pick one of cr, ro, rw or no'
             },
-            lable_js => {
+            label_js => {
                 _doc => 'Java Script expression used to build the content of the label in the item overview. The item object is called item',
                 _example => 'item.label'
             },
-            /FIELD:\s*\S+/ => {
+            '/FIELD:\s*\S+/' => {
                 _doc => 'Content field for the item',
+                _order => 1,
                 _vars => [ qw(label type optional cfg_pl) ],
                 _mandatory => [ qw(label) ],
                 label => { _doc => 'what to call the field' },
                 type => { 
-                    _doc => 'what type of information to prompto for. Choose one of text, textarea, date, timer',
-                    _re => '(text|textarea|date|timer)',
+                    _doc => 'what type of information to prompto for. Choose one of text, textarea, date, timer, select',
+                    _re => '(text|textarea|date|timer|select)',
                     _re_error => 'choose one of text, textarea, date, timer',
                     _default => 'text'
                 },

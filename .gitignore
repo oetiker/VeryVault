@@ -1,4 +1,12 @@
 *~
 Makefile
 Makefile.in
-frontend/source/script/*
+aclocal.m4
+config.log
+config.status
+autom4te.cache/
+frontend/cache/
+frontend/source/script/
+conftools/
+backend/public/
+backend/thirdparty/

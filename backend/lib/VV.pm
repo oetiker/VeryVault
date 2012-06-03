@@ -80,10 +80,9 @@ sub startup {
 
     my $service = VV::RpcService->new( app => $self );
 
-    $self->plugin('qooxdoo_jsonrpc',{
-        prefix => '/',
+    $self->plugin('qooxdoo_jsonrpc', {
         services => {
-            vv => $service
+            VV => $service
         }
     }); 
 }

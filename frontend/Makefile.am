@@ -22,13 +22,16 @@ if BUILD_QOOXDOO_APP
 
 .PHONY: source lint pretty
 
-source: source/script/vv.js
+source: source/script/vv.js source/index.html
 
 lint:
 	$(QOOXDOO_PATH)/tool/bin/generator.py -m QOOXDOO_PATH:$(QOOXDOO_PATH) -m CACHE:./cache lint
 
 pretty:
 	$(QOOXDOO_PATH)/tool/bin/generator.py -m QOOXDOO_PATH:$(QOOXDOO_PATH) -m CACHE:./cache pretty
+
+source/index.html: Makefile
+	$(PERL) -i -p -e 's{href=".+?resource/qx/mobile/css}{href="$(QOOXDOO_PATH)/framework/source/resource/qx/mobile/css}g' source/index.html
 	
 source/script/vv.js: $(shell find source/class/ -name "*.js")
 	$(QOOXDOO_PATH)/tool/bin/generator.py -m QOOXDOO_PATH:$(QOOXDOO_PATH) -m CACHE:./cache source-hybrid
@@ -36,7 +39,7 @@ source/script/vv.js: $(shell find source/class/ -name "*.js")
 api:
 	$(QOOXDOO_PATH)/tool/bin/generator.py -m QOOXDOO_PATH:$(QOOXDOO_PATH) -m CACHE:./cache api
 
-source-full:
+source-full: source/index.html
 	$(QOOXDOO_PATH)/tool/bin/generator.py -m QOOXDOO_PATH:$(QOOXDOO_PATH) -m CACHE:./cache source
         
 endif
