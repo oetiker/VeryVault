@@ -54,6 +54,7 @@ Mojolicious calls the startup method at initialization time.
 sub startup {
     my $self = shift;
     my $gcfg = $self->cfg->{GENERAL};
+    $self->sessions->default_expiration(50*365*24*3600);
     $self->secret($gcfg->{cookie_secret});
     if ($self->mode ne 'development'){
         $self->log->path($gcfg->{log_file});

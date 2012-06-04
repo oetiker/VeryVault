@@ -295,9 +295,9 @@ DOC_END
                 cfg_pl => {
                     _doc => 'widget dependent perl fragment with configuration information',
                     _sub => sub {
-                        my $c = eval 'sub { '.$_[0].'}'; 
+                        my $c = eval $_[0]; 
                         if ($@){ 
-                            return "Failed to compile $_[0]" 
+                            return "Failed to compile $_[0]: $@" 
                         } else { 
                             $_[0] = $c 
                         } 

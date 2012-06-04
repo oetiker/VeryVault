@@ -8,6 +8,7 @@
 
 /* ************************************************************************
 #asset(vv/css/styles.css)
+#asset(qx/mobile/icon/common/*)
 #asset(qx/mobile/icon/android/*)
 #asset(qx/mobile/icon/ios/*)
 ************************************************************************ */
@@ -21,6 +22,11 @@ qx.Class.define("vv.Application",{
         main : function() {
             // Call super class
             this.base(arguments);
+            // Add log appenders
+            if (qx.core.Environment.get("qx.debug")) {
+                qx.log.appender.Native;
+                qx.log.appender.Console;
+            }
             var cfg = vv.data.Config.getInstance();
             cfg.addListenerOnce('config',function(e){
                 // build interface
