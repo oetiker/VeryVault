@@ -13,6 +13,7 @@
 // realy make this private
 var data;
 var key;
+var config;
 qx.Class.define("vv.data.Vault",{
     extend : qx.core.Object,
     type: 'singleton',
@@ -21,40 +22,63 @@ qx.Class.define("vv.data.Vault",{
         data = [];
         key = null;
         if (!localStorage){
-            throw new Error("this browser does not support localStorage");
+            throw new Error(this.tr("Sorry, this browser does not support localStorage. VeryVault requires localStorage to work."));
         }
     },
     members : {
         __storeName: "VeryVaultStore",
-        setKey: function(p){
-            key = p;
-            this.__loadStore();
+        unlock: function(newKey){
+            var cfg_in = localStorage.getItem(this.__storeName+".config");
+            if (cfg_in){
+                var sjcl = vv.data.Sjcl.getInstance();
+                try { 
+                    config = sjcl.decrypt(newKey,cfg_in);
+                }
+                catch (err) {
+                    return false;
+                }
+            }
+            key = newKey;
+            return true;
         },
-        gotData: function (){
-            return localStorage.getItem(this.__storeName) != null
+        isEmpty: function(){
+            return (localStorage.getItem(this.__storeName + '.config') == null);
         },
-        setData: function (){
+        getConfig: function(){
+            if (!key){
+                throw new Error("Key is not set. Can't accesss data.");
+            }
+            return config;
+        },
+        __set: function (name,data){
             if (!key){
                 throw new Error("Key is not set. Can't store data.");
             }
-            var sjcl = vv.Sjcl.getInstance();        
+            var sjcl = vv.data.Sjcl.getInstance();        
             localStorage.setItem(
-                this.__storeName,
+                this.__storeName+'.'+name,
                 sjcl.encrypt(
                     key,
                     qx.lang.Json.stringify(data)
                 )
             );
         },
+        setConfig: function (cfg){
+            this.__set('config',cfg);
+        },
+        setData: function (data){
+            this.__set('data',data);
+        },
+
         getData: function (){
-            var item = localStorage.getItem(this.__storeName);
+            var item = localStorage.getItem(this.__storeName + '.data');
             if (item == null){
-                return data;
+                return {};
             };
             if (item && !key){
                 throw new Error("There is local data but no key is set");
             }
-            var sjcl = vv.Sjcl.getInstance();
+            var sjcl = vv.data.Sjcl.getInstance();
             return qx.lang.Json.parse(
                 sjcl.decrypt(key,item)
             );
@@ -62,12 +86,9 @@ qx.Class.define("vv.data.Vault",{
         clearData: function(){
             key = null;
             data = [];
-            localStorage.removeItem(this.__storeName);
+            localStorage.removeItem(this.__storeName + '.data');
+            localStorage.removeItem(this.__storeName + '.config');
         }
-    },
-    desctruct: function(){
-        key = null;
-        data = null;
     }
 });
 

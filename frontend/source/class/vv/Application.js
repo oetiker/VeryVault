@@ -27,12 +27,17 @@ qx.Class.define("vv.Application",{
                 qx.log.appender.Native;
                 qx.log.appender.Console;
             }
-            var cfg = vv.data.Config.getInstance();
-            cfg.addListenerOnce('config',function(e){
-                // build interface
+            (new vv.page.Loading()).show();
+            var secret = new vv.page.AskSecret();
+            var cfg = vv.data.Config.getInstance();            
+            secret.addListenerOnce('ready',function(){        
+                cfg.load();
             },this);
-            cfg.fetch();
-        }        
+            cfg.addListenerOnce('ready',function(e){
+                vv.page.Overview.getInstance().show();
+            },this);
+            secret.show();
+        }
     }
 });
 

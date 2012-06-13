@@ -17,7 +17,9 @@ qx.Class.define("vv.page.Associate", {
     type : "singleton",
 
     construct : function() {
-        var layout = new qx.ui.mobile.layout.VBox();
+        var layout = new qx.ui.mobile.layout.VBox().set({
+            alignY: 'middle'
+        });
         this.base(arguments,layout);
         this.set({
             title: this.tr('Associate'),
@@ -28,13 +30,19 @@ qx.Class.define("vv.page.Associate", {
         _initialize: function (){
             this.base(arguments);
             var body = this.getContent();
+            var info = new qx.ui.mobile.basic.Label(this.tr("Your copy of VeryVault is not yet associated with the VeryVault server. Please enter your email and association password."));
+            info.addCssClass('infoBlock');
+            body.add(info);
             var form = new qx.ui.mobile.form.Form();
             var email = new qx.ui.mobile.form.TextField().set({
                 placeholder:this.tr("eMail"),
                 required: true
             });
+            // this will get a email specific keyboard in ios
+            if (qx.core.Environment.get('os.name') == 'ios'){
+                qx.bom.element.Attribute.set(email.getContainerElement(),'type','email');
+            }
             form.add(email,this.tr("eMail"));
-    
             var password = new qx.ui.mobile.form.PasswordField().set({
                 placeholder:this.tr("Password"),
                 required: true
@@ -56,9 +64,8 @@ qx.Class.define("vv.page.Associate", {
                         });
                         pop.exc(exc);                   
                     }
-                    else {
-                        that.hide();
-                        that.fireEvent('associated');
+                    else {                        
+                        that.fireEvent('associated');                        
                         pop.info(
                             that.tr("Success"),
                             that.tr("Your VeryVault instance is now properly associated.")
@@ -66,6 +73,11 @@ qx.Class.define("vv.page.Associate", {
                     }
                 },'associate',email.getValue(),password.getValue());
             },this);
+            this.addListener("stop",function(){
+                email.setValue(null);
+                password.setValue(null);
+            });
+
         }
     },
     events : { 

@@ -8,9 +8,9 @@
 ************************************************************************ */
 
 /* ************************************************************************
-#asset(qx/icon/Tango/48/status/dialog-error.png)
-#asset(qx/icon/Tango/48/status/dialog-information.png)
-#asset(qx/icon/Tango/48/status/dialog-warning.png)
+#asset(qx/icon/Tango/22/status/dialog-error.png)
+#asset(qx/icon/Tango/22/status/dialog-information.png)
+#asset(qx/icon/Tango/22/status/dialog-warning.png)
 ************************************************************************ */
 
 /**
@@ -30,7 +30,7 @@ qx.Class.define("vv.popup.MsgBox", {
         var box = new qx.ui.mobile.container.Composite(new qx.ui.mobile.layout.VBox());
         var lb = this.__label = new qx.ui.mobile.basic.Label();
         box.add(lb);
-        var bt = this.__btn = new qx.ui.mobile.form.Button(this.tr('Ok'));
+        var bt = this.__btn = new qx.ui.mobile.form.Button(this.tr('Ok'));        
         box.add(bt);
         bt.addListener("tap", function(){
             this.hide();
@@ -78,7 +78,7 @@ qx.Class.define("vv.popup.MsgBox", {
          * @return {void} 
          */
         error : function(title, text) {
-            this.__show("qx/icon/Tango/48/status/dialog-error.png",title,text);
+            this.__show("qx/icon/Tango/22/status/dialog-error.png",title,text);
         },
 
 
@@ -89,7 +89,7 @@ qx.Class.define("vv.popup.MsgBox", {
          * @return {void} 
          */
         exc : function(exc) {
-            this.__show("qx/icon/Tango/48/status/dialog-error.png",
+            this.__show("qx/icon/Tango/22/status/dialog-error.png",
                         this.tr('RPC Error %1', exc.code), 
                         this.tr('%1 (Error Code %2)', exc.message, exc.code)
             );
@@ -104,7 +104,7 @@ qx.Class.define("vv.popup.MsgBox", {
          * @return {void} 
          */
         info : function(title, text) {
-            this.__show("qx/icon/Tango/48/status/dialog-information.png",title,text);
+            this.__show("qx/icon/Tango/22/status/dialog-information.png",title,text);
         },
 
 
@@ -116,7 +116,7 @@ qx.Class.define("vv.popup.MsgBox", {
          * @return {void} 
          */
         warn : function(title, text) {
-            this.__show("qx/icon/Tango/48/status/dialog-warning.png",title,text);
+            this.__show("qx/icon/Tango/22/status/dialog-warning.png",title,text);
         }
     }
 });

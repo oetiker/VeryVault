@@ -16,17 +16,30 @@ qx.Class.define("vv.data.Config",{
         this.base(arguments);
     },
     events : {
-        'config': 'qx.event.type.Event'
+        'ready': 'qx.event.type.Event'
     },
     members : {
         __config: null,
-        fetch: function(){
-            var rpc = vv.data.Rpc.getInstance();
+        load: function(){
+            var vault = vv.data.Vault.getInstance();
             var that = this;
-            rpc.callAsyncSmart(function(ret){
-                that.fireDataEvent('config',ret);
-                that.__config = ret;
-            },'getConfig');
+            if (window.navigator.onLine){
+                var rpc = vv.data.Rpc.getInstance();            
+                rpc.callAsyncSmart(function(ret){                
+                    vault.setConfig(ret);
+                    that.__config = ret;
+                    that.fireEvent('ready');
+                },'getConfig');
+            }
+            else {
+                var config = vault.getConfig();
+                if (config){
+                    this.__config = config;
+                    this.fireEvent('ready');
+                } else {
+                    vv.popup.MsgBox(this.tr('No Off Line Config'),this.tr('There is no off line copy of the configuration in cache. Get on line and re-start the app'));
+                }
+            }
         },
         getConfig: function(){
             return this.__config;
