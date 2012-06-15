@@ -17,6 +17,5 @@ qx.Class.define('vv.Syncer', {
         this.base(arguments);
     },
 
-    members : {
-    }
+    members : {}
 });

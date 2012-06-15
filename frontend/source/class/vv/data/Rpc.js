@@ -15,6 +15,7 @@ qx.Class.define('vv.data.Rpc', {
 
     construct : function() {
         this.base(arguments);
+
         this.set({
             timeout     : 15000,
             url         : 'jsonrpc',
@@ -31,32 +32,35 @@ qx.Class.define('vv.data.Rpc', {
          * It just does not get called when there is an exception.
          *
          * @param handler {Function} the callback function.
-         * @param methodName {String} the name of the method to call.
          * @return {var} the method call reference.
          */
         callAsyncSmart : function(handler) {
             var origArguments = arguments;
             var origThis = this;
             var origHandler = handler;
+
             var superHandler = function(ret, exc, id) {
                 if (exc) {
-                    if (exc.code == 3978){
+                    if (exc.code == 3978) {
                         var pop = vv.page.Associate.getInstance();
-                        pop.addListenerOnce('associated',function(){
+
+                        pop.addListenerOnce('associated', function() {
                             origArguments.callee.apply(origThis, origArguments);
-                        });      
+                        });
+
                         pop.show();
                     }
                     else {
                         vv.popup.MsgBox.getInstance().exc(exc);
-                    } 
-                } else {
+                    }
+                }
+                else {
                     origHandler(ret);
                 }
             };
 
             arguments[0] = superHandler;
             this.callAsync.apply(this, arguments);
-        }        
+        }
     }
 });

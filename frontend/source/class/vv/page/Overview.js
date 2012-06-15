@@ -12,59 +12,93 @@
 /**
  * This is the main application class of your custom application "vv"
  */
-qx.Class.define("vv.page.Overview",{
+qx.Class.define("vv.page.Overview", {
     extend : qx.ui.mobile.page.NavigationPage,
-    type: 'singleton',
-    construct: function(){
+    type : 'singleton',
+
+    construct : function() {
         this.base(arguments);
+
         this.set({
-            title: this.tr("VeryVault"),
-            showButton: false
+            title      : this.tr("VeryVault"),
+            showButton : false
         });
+
+        this.__detailPages = {};
     },
+
     members : {
-        _initialize: function() {
+        __detailPages : null,
+        __model : null,
+
+
+        /**
+         * TODOC
+         *
+         */
+        _initialize : function() {
             this.base(arguments);
             var body = this.getContent();
-            var form = new qx.ui.mobile.form.Form();
-            var search = new qx.ui.mobile.form.TextField().set({
-                required: true
-            });
-            form.add(search,this.tr("Search"));
-            body.add(new qx.ui.mobile.form.renderer.SinglePlaceholder(form));
             var list = this._makeList();
             body.add(list);
         },
-        _makeList: function(){
-            var model = new qx.data.Array();            
-            
+
+
+        /**
+         * TODOC
+         *
+         * @return {var} TODOC
+         */
+        _makeList : function() {
+            var model = this.__model = new qx.data.Array();
+
             var list = new qx.ui.mobile.list.List({
                 configureItem : function(item, model, row) {
                     item.set({
-                        image: "qx/icon/Tango/22/"+model.icon+".png",
-                        title: model.title,
-                        selectable: true,
-                        showArrow: true
+                        image      : "qx/icon/Tango/22/" + model.icon + ".png",
+                        title      : model.title,
+                        selectable : true,
+                        showArrow  : true
                     });
                 }
-            }).set({
-                model: model
-            });
+            }).set({ model : model });
 
-            var cfg = vv.data.Config.getInstance().getConfig();
-            cfg.itemList.forEach(function(key,i){
+            var cfg = vv.data.Vault.getInstance().getConfig();
+
+            cfg.itemList.forEach(function(key, i) {
                 var item = cfg.items[key];
+
                 model.push({
-                    icon: item.icon,
-                    title: item.name,
-                    key: key
+                    icon  : item.icon,
+                    title : item.name,
+                    key   : key
                 });
             });
-            list.addListener("changeSelection",function(e){
-                var id = e.getData();
-                var key = model.getItem(id).key;
-            },this);
+
+            list.addListener("changeSelection", this._showDetailPage, this);
             return list;
+        },
+
+
+        /**
+         * TODOC
+         *
+         * @param e {Event} TODOC
+         */
+        _showDetailPage : function(e) {
+            var id = e.getData();
+            var key = this.__model.getItem(id).key;
+            var page = this.__detailPages[key];
+
+            if (page == null) {
+                page = this.__detailPages[key] = new vv.page.Detail(key);
+
+                page.addListener('back', function() {
+                    this.show({ reverse : true });
+                }, this);
+            }
+
+            page.show();
         }
     }
 });

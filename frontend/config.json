@@ -93,8 +93,8 @@
     // Uncomment the following entry to add a contrib or library to your
     // project; make sure to adapt the path to the Manifest.json; if you are
     // using a contrib: library, it will be downloaded into the path specified
-    // by the 'cache/downloads' config key
-    /*
+    // by the 'cache/downloads' config key 
+   /*
     , "libraries" : 
     {
       "library" :
@@ -121,5 +121,33 @@
       }
     }
     */
+    , "pretty" :
+     {
+        "pretty-print" : 
+        {
+            "general" : 
+            {           
+               "indent-string"            : "    "
+            },
+            "comments" :
+            {
+                "trailing" :
+                {
+                    "keep-column"         : false,
+                    "padding"             : "  "
+                }
+            },
+            "code" :
+            {
+                "align-with-curlies"     :  false,
+                "open-curly" :
+                { 
+                    "newline-before"      : "n",
+                     "indent-before"        : false
+                }
+            }
+        }
+     }
+
   }
 }

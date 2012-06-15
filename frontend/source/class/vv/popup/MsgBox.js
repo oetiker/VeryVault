@@ -30,55 +30,67 @@ qx.Class.define("vv.popup.MsgBox", {
         var box = new qx.ui.mobile.container.Composite(new qx.ui.mobile.layout.VBox());
         var lb = this.__label = new qx.ui.mobile.basic.Label();
         box.add(lb);
-        var bt = this.__btn = new qx.ui.mobile.form.Button(this.tr('Ok'));        
+        var bt = this.__btn = new qx.ui.mobile.form.Button(this.tr('Ok'));
         box.add(bt);
-        bt.addListener("tap", function(){
+
+        bt.addListener("tap", function() {
             this.hide();
             this.__showNext();
-        },this);
-        this.base(arguments,box);
+        },
+        this);
+
+        this.base(arguments, box);
         this.__queue = [];
         this.hide();
     },
+
     members : {
         __label : null,
         __btn : null,
-        __queue: null,
-        __showNext: function(){
-            if (this.__queue.length > 0 && ! this.isVisible() ){
+        __queue : null,
+
+
+        /**
+         * TODOC
+         *
+         */
+        __showNext : function() {
+            if (this.__queue.length > 0 && !this.isVisible()) {
                 var item = this.__queue.shift();
                 this.setTitle(String(item.title));
                 this.setIcon(item.icon);
-                this.__label.setValue(item.text);    
+                this.__label.setValue(item.text);
                 this.show();
             }
         },
+
+
         /**
          * Open the message box
          *
+         * @param icon {var} TODOC
          * @param title {String} window title
          * @param text {String} contents
-         * @return {void} 
          */
         __show : function(icon, title, text) {
             this.__queue.push({
-                icon: icon,
-                title: title,
-                text: text
+                icon  : icon,
+                title : title,
+                text  : text
             });
+
             this.__showNext();
         },
 
 
-       /**
+        /**
          * Open the Error popup
          *
          * @param title {String} title
          * @param text {String} body
-         * @return {void} 
          */
         error : function(title, text) {
-            this.__show("qx/icon/Tango/22/status/dialog-error.png",title,text);
+            this.__show("qx/icon/Tango/22/status/dialog-error.png", title, text);
         },
 
 
@@ -86,13 +98,9 @@ qx.Class.define("vv.popup.MsgBox", {
          * Show server error message
          *
          * @param exc {Map} callAsync exception
-         * @return {void} 
          */
         exc : function(exc) {
-            this.__show("qx/icon/Tango/22/status/dialog-error.png",
-                        this.tr('RPC Error %1', exc.code), 
-                        this.tr('%1 (Error Code %2)', exc.message, exc.code)
-            );
+            this.__show("qx/icon/Tango/22/status/dialog-error.png", this.tr('RPC Error %1', exc.code), this.tr('%1 (Error Code %2)', exc.message, exc.code));
         },
 
 
@@ -101,10 +109,9 @@ qx.Class.define("vv.popup.MsgBox", {
          *
          * @param title {String} title
          * @param text {String} body
-         * @return {void} 
          */
         info : function(title, text) {
-            this.__show("qx/icon/Tango/22/status/dialog-information.png",title,text);
+            this.__show("qx/icon/Tango/22/status/dialog-information.png", title, text);
         },
 
 
@@ -113,10 +120,9 @@ qx.Class.define("vv.popup.MsgBox", {
          *
          * @param title {String} window title
          * @param text {String} content
-         * @return {void} 
          */
         warn : function(title, text) {
-            this.__show("qx/icon/Tango/22/status/dialog-warning.png",title,text);
+            this.__show("qx/icon/Tango/22/status/dialog-warning.png", title, text);
         }
     }
 });
