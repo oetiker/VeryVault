@@ -15,11 +15,11 @@
 qx.Class.define("vv.page.Detail", {
     extend : qx.ui.mobile.page.NavigationPage,
 
-    construct : function(key) {
+    construct : function(itemType) {
         this.base(arguments);
-        this.__key = key;
+        this.__type = itemType;
         this.__cfg = vv.data.Vault.getInstance().getConfig();
-        var item = this.__item = this.__cfg.items[key];
+        var item = this.__itemCfg = this.__cfg.items[itemType];
 
         this.set({
             title          : item.name,
@@ -29,12 +29,10 @@ qx.Class.define("vv.page.Detail", {
         });
     },
 
-    properties : { model : {} },
-
     members : {
-        __key : null,
+        __type : null,
         __cfg : null,
-        __item : null,
+        __itemCfg : null,
 
 
         /**
@@ -48,7 +46,7 @@ qx.Class.define("vv.page.Detail", {
             var search = new qx.ui.mobile.form.TextField().set({ required : true });
             form.add(search, this.tr("Search"));
             body.add(new qx.ui.mobile.form.renderer.SinglePlaceholder(form));
-            var list = this._makeList();
+            var list = this.__list = this._makeList();
             body.add(list);
         },
 
@@ -58,8 +56,11 @@ qx.Class.define("vv.page.Detail", {
          *
          */
         _start : function() {
-            var model = this.getModel();
-            var cfg = this.__cfg;
+            var vault = vv.data.Vault.getInstance();
+
+            vault.getItems(this.__type, function(data) {
+                this.__list.setModel(model);
+            }, this);
         },
 
         // ...
@@ -69,19 +70,15 @@ qx.Class.define("vv.page.Detail", {
          * @return {var} TODOC
          */
         _makeList : function() {
-            this.setModel(new qx.data.Array());
-
-            var list = new qx.ui.mobile.list.List({
+            return new qx.ui.mobile.list.List({
                 configureItem : function(item, model, row) {
                     item.set({
-                        title      : model.title,
+                        title      : this.__itemCft.list_js(model.getItem(row)),
                         selectable : true,
                         showArrow  : true
                     });
                 }
-            }).set({ model : this.getModel() });
-
-            return list;
+            });
         }
     }
 });

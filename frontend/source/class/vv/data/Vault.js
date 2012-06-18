@@ -6,13 +6,17 @@
 ************************************************************************ */
 
 /**
- * The Vault uses SJCL to encryp and decrypt data as it goes to the localStore of
- * the webbrowser. This module throws exceptions if it is unhappy.
+ * The Vault uses SJCL to encryp and decrypt data as it goes to the localStorage of
+ * the webbrowser. It also handles syncing data with the server.
  */
-// realy make this private
-var data;
+// realy make these variables private
+var cache = {
+    dbCfg    : null,
+    data     : {},
+    lastSync : null
+};
+
 var key;
-var config;
 
 qx.Class.define("vv.data.Vault", {
     extend : qx.core.Object,
@@ -29,12 +33,15 @@ qx.Class.define("vv.data.Vault", {
 
         var as = this.__askPass = new vv.page.AskSecret();
         as.addListener('key', this._tryUnlockEvent, this);
-        as.addListener('reset', this._clearLocalStoreEvent, this);
+        as.addListener('reset', this._clearLocalStorageEvent, this);
         var ans = this.__askNewPass = new vv.page.AskNewSecret();
         ans.addListener('key', this._setNewKeyEvent, this);
     },
 
-    events : { open : 'qx.event.type.Event' },
+    events : {
+        open      : 'qx.event.type.Event',
+        dataReady : 'qx.event.type.Event'
+    },
 
     members : {
         __storeName : "VeryVaultStore",
@@ -43,7 +50,7 @@ qx.Class.define("vv.data.Vault", {
 
 
         /**
-         * TODOC
+         * Unlock the Vault. Once the vault is properly opened, it will emit an 'open' event.
          *
          */
         unlock : function() {
@@ -52,9 +59,9 @@ qx.Class.define("vv.data.Vault", {
                 return;
             }
 
-            var cfg_in = localStorage.getItem(this.__storeName);
+            var cache_in = localStorage.getItem(this.__storeName);
 
-            if (cfg_in) {
+            if (cache_in) {
                 this.__askPass.show();
             } else {
                 this.__askNewPass.show();
@@ -63,42 +70,46 @@ qx.Class.define("vv.data.Vault", {
 
 
         /**
-         * TODOC
+         * Use the key from the unlock event to decrytp the localy stored configuration data.
+         * If succesfull, go and try getting the latest config from the server.
          *
-         * @param e {Event} TODOC
-         * @return {boolean} TODOC
+         * @param e {Event} unlock event carring the key data.
          */
         _tryUnlockEvent : function(e) {
             var newKey = e.getData();
             var sjcl = vv.data.Sjcl.getInstance();
-            var cfg_in = localStorage.getItem(this.__storeName);
+            var cache_in = localStorage.getItem(this.__storeName);
 
             try {
-                config = sjcl.decrypt(newKey, cfg_in);
+                cache = sjcl.decrypt(newKey, cfg_in);
             }
             catch(err) {
                 vv.popup.MsgBox.getInstance().error(this.tr('Wrong Key'), this.tr('The key does not work. Try again.'));
-                return false;
+                return;
             }
 
             key = newKey;
             this._fetchConfig();
+            this._updateItems();
         },
 
 
         /**
-         * TODOC
+         * A new key has been setup. Go and fetch the data.
          *
-         * @param e {Event} TODOC
+         * @param e {Event} the new key event.
          */
         _setNewKeyEvent : function(e) {
             key = e.getData();
             this._fetchConfig();
+            this._updateItems();
         },
 
 
         /**
-         * TODOC
+         * If the browser is online, go and fetch the config data from the server.
+         * If we are not known to the server, this will cause the association screen 
+         * to be displayed.
          *
          */
         _fetchConfig : function() {
@@ -107,14 +118,28 @@ qx.Class.define("vv.data.Vault", {
                 var that = this;
 
                 rpc.callAsyncSmart(function(ret) {
-                    config = ret;
-                    that.__set('', config);
+                    cache.dbCfg = ret;
+
+                    for (var itemKey in ret) {
+                        var js = ret[itemKey].label_js || '"No Label Defined"';
+
+                        try {
+                            ret[itemKey].label_js = eval('function(item){ return ' + ret[itemKey].label_js + '}');
+                        }
+                        catch(err) {
+                            ret[itemKey].label_js = function(item) {
+                                return 'failed to compile lible_js';
+                            };
+                        }
+                    }
+
+                    that.__save();
                     that.fireEvent('open');
                 },
                 'getConfig');
             }
             else {
-                if (config) {
+                if (cache.dbCfg) {
                     this.fireEvent('open');
                 } else {
                     vv.popup.MsgBox.getInstance().error(this.tr('No Off Line Config'), this.tr('There is no off line copy of the configuration in cache. Get on line and re-start the app'));
@@ -124,98 +149,127 @@ qx.Class.define("vv.data.Vault", {
 
 
         /**
-         * TODOC
+         * Handle the clear store event and show a dialog asking for a new password.
          *
          */
-        _clearLocalStoreEvent : function() {
-            this.clearData();
+        _clearLocalStorageEvent : function() {
+            this.clearLocalStorage();
             this.__askNewPass.show();
         },
 
 
         /**
-         * TODOC
+         * Return the configuration hash
          *
-         * @return {var} TODOC
-         * @throws TODOC
+         * @return {Map} configuration hash
+         * @throws Error if no key is set
          */
         getConfig : function() {
             if (!key) {
                 throw new Error("Key is not set. Can't accesss data.");
             }
 
-            return config;
+            return cache.dbCfg;
         },
 
 
         /**
-         * TODOC
+         * Store an item in local storage, encrypting it while doing so
          *
-         * @param name {var} TODOC
-         * @param data {var} TODOC
-         * @throws TODOC
+         * @throws Error if no key is set
          */
-        __set : function(name, data) {
+        __save : function() {
             if (!key) {
                 throw new Error("Key is not set. Can't store data.");
             }
 
             var sjcl = vv.data.Sjcl.getInstance();
-            localStorage.setItem(this.__storeName + name, sjcl.encrypt(key, qx.lang.Json.stringify(data)));
+            localStorage.setItem(this.__storeName, sjcl.encrypt(key, qx.lang.Json.stringify(cache)));
         },
 
 
         /**
-         * TODOC
-         *
-         * @param key {var} TODOC
-         * @param data {var} TODOC
-         */
-        setData : function(key, data) {
-            this.__set('.' + key, data);
-        },
-
-
-        /**
-         * TODOC
-         *
-         * @param key {var} TODOC
-         * @return {Map | var} TODOC
-         * @throws TODOC
-         */
-        getData : function(key) {
-            var item = localStorage.getItem(this.__storeName + '.' + key);
-
-            if (item == null) {
-                return {};
-            }
-
-            if (item && !key) {
-                throw new Error("There is local data but no key is set");
-            }
-
-            var sjcl = vv.data.Sjcl.getInstance();
-            return qx.lang.Json.parse(sjcl.decrypt(key, item));
-        },
-
-
-        /**
-         * TODOC
+         * Remove all data from the localStorage.
          *
          */
-        clearData : function() {
+        clearLocalStorage : function() {
             key = null;
-            config = null;
-            data = [];
-            var rx = new RegExp('^' + this.__storeName);
 
-            for (var i=localStorage.length; i>=0; i--) {
-                var key = localStorage.key(i);
+            cache = {
+                dbCfg    : null,
+                data     : {},
+                lastSync : null
+            };
 
-                if (key && key.match(rx)) {
-                    localStorage.removeItem(key);
+            localStorage.removeItem(this.__storeName);
+        },
+
+
+        /**
+         * TODOC
+         *
+         * @param store {var} TODOC
+         * @param callback {var} TODOC
+         * @param context {var} TODOC
+         */
+        getItems : function(store, callback, context) {
+            if (window.navigator.onLine) {
+                var rpc = vv.data.Rpc.getInstance();
+                var that = this;
+
+                rpc.callAsyncSmart(function(ret) {
+                    ret.forEach(function(item) {
+                        if (item.savetime > config.lastSync) {
+                            cache.lastSync = item.savetime;
+                        }
+
+                        var localItem = cache.data[item.id];
+
+                        if (localItem) {
+                            if (item.rmtime && localItem.savetime < item.rmtime) {
+                                delete data[item.id];
+                                return;
+                            }
+
+                            if (localItem.savetime < localItem.updatetime) {
+                                localItem.merge = item;
+                                return;
+                            }
+                        }
+
+                        data[item.id] = item;
+                    });
+
+                    that.__save();
+                    that.__runItemCallback(store, callback, context);
+                },
+                'getItems', cache.lastSync);
+            }
+            else {
+                this.__runItemCallback(store, callback, context);
+            }
+        },
+
+
+        /**
+         * TODOC
+         *
+         * @param store {var} TODOC
+         * @param callback {var} TODOC
+         * @param context {var} TODOC
+         */
+        __runItemCallback : function(store, callback, context) {
+            var data = new qx.data.Array();
+
+            for (var key in cache.data) {
+                var item = cache.data[key];
+
+                if (item.type == store) {
+                    ret.push(item);
                 }
             }
+
+            callback.call(context, data);
         }
     }
 });
