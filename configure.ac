@@ -62,7 +62,12 @@ AC_ARG_ENABLE(pkgonly,
                         [Skip all checking]))
 AC_SUBST(enable_pkgonly)
 
-HTDOCSDIR=${prefix}/htdocs
+actual_prefix=$prefix
+if test x$actual_prefix = xNONE; then
+    actual_prefix=$ac_default_prefix
+fi
+
+HTDOCSDIR=${actual_prefix}/htdocs
 AC_ARG_WITH(htdocs-dir,AC_HELP_STRING([--with-htdocs-dir=[DIR]],[Where to install htdocs [PREFIX/htdocs]]]), [HTDOCSDIR=$withval])
 AC_SUBST(HTDOCSDIR)
 
@@ -96,10 +101,6 @@ AC_SUBST(PERL5LIB)
 
 mod_ok=1
 if test "$enable_pkgonly" != yes; then
-   prfx=$prefix
-   if test x$prfx = xNONE; then
-       prfx=$ac_default_prefix
-   fi
    for module in \
      Mojolicious \
      MojoX::Dispatcher::Qooxdoo::Jsonrpc \
@@ -108,7 +109,7 @@ if test "$enable_pkgonly" != yes; then
      DBD::SQLite
    do 
      AC_MSG_CHECKING([checking for perl module '$module'])
-     if ${PERL} -I$prfx/thirdparty/lib/perl5 -e 'use '$module 2>/dev/null ; then
+     if ${PERL} -I$actual_prefix/thirdparty/lib/perl5 -e 'use '$module 2>/dev/null ; then
          AC_MSG_RESULT([Ok])
      else
          AC_MSG_RESULT([Failed])
@@ -129,7 +130,7 @@ if test "$enable_pkgonly" != yes; then
    You can install local copies of the missing modules 
    by running
 
-     ./setup/build-perl-modules.sh ${prfx}/thirdparty
+     ./setup/build-perl-modules.sh ${actual_prefix}/thirdparty
 
 NOTES
       exit 1
