@@ -1,5 +1,4 @@
 /* ************************************************************************
-
    Copyrigtht: OETIKER+PARTNER AG
    License:    GPL V3 or later
    Authors:    Tobias Oetiker
@@ -12,17 +11,15 @@
  * Once successful the server will add our username to the
  * our encrypted and signed cookie
  */
-qx.Class.define("vv.page.AskSecret", {
-    extend : qx.ui.mobile.page.NavigationPage,
+qx.Class.define("vv.popup.AskSecret", {
+    extend : qx.ui.mobile.dialog.Dialog,
 
     construct : function() {
-        var layout = new qx.ui.mobile.layout.VBox().set({ alignY : 'middle' });
-        this.base(arguments, layout);
-
+        this.base(arguments);
         this.set({
-            title          : this.tr('Secret'),
-            showBackButton : false
+            title          : this.tr('Secret')
         });
+        this._initialize();
     },
 
     events : {
@@ -35,14 +32,14 @@ qx.Class.define("vv.page.AskSecret", {
          * TODOC
          *
          */
-        _initialize : function() {
-            this.base(arguments);
-            var body = this.getContent();
+        _initialize : function(body) {
+            var layout = new qx.ui.mobile.layout.VBox(); // .set({ alignY : 'middle' });
+            var body = new qx.ui.mobile.container.Composite(layout);
+            this.add(body);
             var info = new qx.ui.mobile.basic.Label(this.tr("VeryVault uses encryption to block unauthorized access to your data. Please enter your Secret!"));
             info.addCssClass('infoBlock');
             body.add(info);
             var formAccess = new qx.ui.mobile.form.Form();
-            var vault = vv.data.Vault.getInstance();
 
             var secret = new qx.ui.mobile.form.PasswordField().set({
                 placeholder : this.tr("secret"),
@@ -65,11 +62,16 @@ qx.Class.define("vv.page.AskSecret", {
 
             clear.addListener("tap", function() {
                 this.fireEvent('reset');
+                this.hide();
             }, this);
-
-            this.addListener("stop", function() {
-                formAccess.reset();
-            });
+        },
+        /* positioning is a bit broken on 2.0.0 */
+        show: function(){
+            this.base(arguments);
+            this._updatePosition();
+            this._updatePosition();
+            this._updatePosition();
+            this._updatePosition();
         }
     }
 });

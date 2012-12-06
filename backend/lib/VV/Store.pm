@@ -29,6 +29,7 @@ retrieve items.
 use Mojo::Base -base;
 use DBI;
 use Mojo::JSON;
+use Carp;
 use Encode;
 use VV::Exception qw(mkerror);
 use File::Spec;
@@ -72,7 +73,7 @@ has dbh => sub {
          sqlite_unicode => 1,
     });
     return $dbh;
-}
+};
 
 has encodeUtf8  => sub { find_encoding('utf8') };
 
@@ -182,7 +183,7 @@ sub getItems {
     my @return;
     for my $item (@$updated){
         my $itemcfg =  $cfg->{DATA}{$item->{vault_type}} or next;
-        my $ro = $item->{vault_user} ne $user and $itemcfg->{shared_access} eq 'ro';
+        my $ro = ($item->{vault_user} ne $user and $itemcfg->{shared_access} eq 'ro');
         if ( $item->{vault_user} eq $user or $itemcfg->{shared_access} ~~ [qw(rw ro)] ){
             push @return, {
                 id => $item->{vault_id},
@@ -244,10 +245,10 @@ sub storeItem {
     if (not $id){
         $dbh->do("INSERT INTO vault (vault_user,vault_savetime,vault_updatetime,vault_type,vault_data) VALUES(?,?,?,?,?)",{},
                 $user,$savetime,$item->{updatetime},$item->{type},$data);
-        $id = $dbp->last_insert_id("","","","");
+        $id = $dbh->last_insert_id("","","","");
     } 
     else {
-        my $rows = $dbh->do(<<SQL_END,{},$user,$time,$item->{updatetime},$data,$item->{id},$user,$cfg->{DATA}{$item->{type}}{shared_access} ~~ 'rw');
+        my $rows = $dbh->do(<<SQL_END,{},$user,$savetime,$item->{updatetime},$data,$item->{id},$user,$cfg->{DATA}{$item->{type}}{shared_access} ~~ 'rw');
 UPDATE vault 
    SET vault_user = ?, 
        vault_savetime = ?, 
@@ -262,7 +263,7 @@ SQL_END
             die mkerror(2394,"Failed to update, maybe you have to sync your copy first");
         }
     }     
-    return { id => $id, savetime => $time };
+    return { id => $id, savetime => $savetime };
 }
 
 =head2 $store->removeItem(itemId,lastsave);
@@ -280,10 +281,10 @@ sub removeItem {
     my $user = $self->user;
     my $cfg = $self->app->cfg;    
     $dbh->begin_work;
-    my ($type,$user) = $dbh->selectrow("SELECT vault_type,vault_user FROM vault WHERE vault_id = ?",{},$id);
+    my $vaultType = $dbh->selectrow("SELECT vault_type FROM vault WHERE vault_id = ?",{},$id);
     my $time = time;
-    if ($type){
-        my $rows = $dbh->do("DELETE FROM vault WHERE vault_id = ? AND vault_savetime = ? AND ( vault_user = ? OR ? = 1 )",{},$id,$savetime,$user,$cfg->{DATA}{$type}{shared_access} ~~ 'rw');
+    if ($vaultType){
+        my $rows = $dbh->do("DELETE FROM vault WHERE vault_id = ? AND vault_savetime = ? AND ( vault_user = ? OR ? = 1 )",{},$id,$savetime,$user,$cfg->{DATA}{$vaultType}{shared_access} ~~ 'rw');
         if ($rows == 0) {
             $dbh->rollback;
             die mkerror(2394,"Failed to remove, maybe you do not have the necessary priviledges");

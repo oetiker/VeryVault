@@ -12,18 +12,17 @@
  * Once successful the server will add our username to the
  * our encrypted and signed cookie
  */
-qx.Class.define("vv.page.Associate", {
-    extend : qx.ui.mobile.page.NavigationPage,
+qx.Class.define("vv.popup.Associate", {
+    extend : qx.ui.mobile.dialog.Dialog,
     type : "singleton",
 
     construct : function() {
-        var layout = new qx.ui.mobile.layout.VBox().set({ alignY : 'middle' });
-        this.base(arguments, layout);
-
+        this.base(arguments);
         this.set({
             title          : this.tr('Associate'),
             showBackButton : false
         });
+        this._initialize();
     },
 
     members : {
@@ -32,8 +31,9 @@ qx.Class.define("vv.page.Associate", {
          *
          */
         _initialize : function() {
-            this.base(arguments);
-            var body = this.getContent();
+            var layout = new qx.ui.mobile.layout.VBox();
+            var body = new qx.ui.mobile.container.Composite(layout);
+            this.add(body);
             var info = new qx.ui.mobile.basic.Label(this.tr("Your copy of VeryVault is not yet associated with the VeryVault server. Please enter your email and association password."));
             info.addCssClass('infoBlock');
             body.add(info);
@@ -66,13 +66,12 @@ qx.Class.define("vv.page.Associate", {
                 var rpc = vv.data.Rpc.getInstance();
                 var pop = vv.popup.MsgBox.getInstance();
                 var that = this;
-
+                this.hide();
                 rpc.callAsync(function(ret, exc) {
                     if (exc) {
                         pop.addListenerOnce('disappear', function() {
                             that.show();
                         });
-
                         pop.exc(exc);
                     }
                     else {
@@ -84,11 +83,20 @@ qx.Class.define("vv.page.Associate", {
             },
             this);
 
-            this.addListener("stop", function() {
+            this.addListener("appear", function() {
                 email.setValue(null);
                 password.setValue(null);
             });
+        },
+        /* positioning is a bit broken on 2.0.0 */
+        show: function(){
+            this.base(arguments);
+            this._updatePosition();
+            this._updatePosition();
+            this._updatePosition();
+            this._updatePosition();
         }
+
     },
 
     events : { 'associated' : 'qx.event.type.Event' }

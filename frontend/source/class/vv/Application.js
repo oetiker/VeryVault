@@ -33,14 +33,11 @@ qx.Class.define("vv.Application", {
                 qx.log.appender.Native;
                 qx.log.appender.Console;
             }
-
-            new vv.page.Loading().show();
+            // initialize the manager
             var vault = vv.data.Vault.getInstance();
-
             vault.addListenerOnce('open', function() {
                 vv.page.Overview.getInstance().show();
             }, this);
-
             vault.unlock();
         }
     }

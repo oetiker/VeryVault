@@ -11,11 +11,12 @@
  * Display while the application is loading
  */
 qx.Class.define("vv.page.Loading", {
-    extend : qx.ui.mobile.page.Page,
+    extend : qx.ui.mobile.page.NavigationPage,
 
     construct : function() {
         var layout = new qx.ui.mobile.layout.VBox().set({ alignY : 'middle' });
         this.base(arguments, layout);
+        this.setTitle(this.tr('VeryVault'));
     },
 
     members : {

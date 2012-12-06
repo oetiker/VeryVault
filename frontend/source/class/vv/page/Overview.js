@@ -18,12 +18,12 @@ qx.Class.define("vv.page.Overview", {
 
     construct : function() {
         this.base(arguments);
-
+        var mgr = vv.page.Manager.getInstance();
         this.set({
             title      : this.tr("VeryVault"),
             showButton : false
         });
-
+        mgr.addMaster(this);
         this.__detailPages = {};
     },
 

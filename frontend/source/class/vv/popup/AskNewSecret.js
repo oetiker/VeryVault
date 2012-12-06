@@ -12,17 +12,15 @@
  * Once successful the server will add our username to the
  * our encrypted and signed cookie
  */
-qx.Class.define("vv.page.AskNewSecret", {
-    extend : qx.ui.mobile.page.NavigationPage,
+qx.Class.define("vv.popup.AskNewSecret", {
+    extend : qx.ui.mobile.dialog.Dialog,
 
     construct : function() {
-        var layout = new qx.ui.mobile.layout.VBox().set({ alignY : 'middle' });
-        this.base(arguments, layout);
-
+        this.base(arguments);
         this.set({
-            title          : this.tr('New Secret'),
-            showBackButton : false
+            title          : this.tr('New Secret')
         });
+        this._initialize();
     },
 
     events : { key : 'qx.event.type.Data' },
@@ -33,8 +31,9 @@ qx.Class.define("vv.page.AskNewSecret", {
          *
          */
         _initialize : function() {
-            this.base(arguments);
-            var body = this.getContent();
+            var layout = new qx.ui.mobile.layout.VBox().set({ alignY : 'middle' });
+            var body = new qx.ui.mobile.container.Composite(layout);
+            this.add(body);
             var info = new qx.ui.mobile.basic.Label(this.tr("VeryVault uses encryption to block unauthorized access to your data. Please enter your Secret!"));
             info.addCssClass('infoBlock');
             body.add(info);
@@ -66,6 +65,7 @@ qx.Class.define("vv.page.AskNewSecret", {
 
                 if (sa && sa == sb) {
                     this.fireDataEvent('key', sa);
+                    this.hide();
                 }
                 else {
                     vv.popup.MsgBox.getInstance().warn(this.tr('Keys do not match'), this.tr('Make sure to enter the same key twice.'));
@@ -73,10 +73,14 @@ qx.Class.define("vv.page.AskNewSecret", {
                 }
             },
             this);
-
-            this.addListener("stop", function() {
-                formNew.reset();
-            });
+        },
+        /* positioning is a bit broken on 2.0.0 */
+        show: function(){
+            this.base(arguments);
+            this._updatePosition();
+            this._updatePosition();
+            this._updatePosition();
+            this._updatePosition();
         }
     }
 });

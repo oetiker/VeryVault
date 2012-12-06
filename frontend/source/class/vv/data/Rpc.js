@@ -42,7 +42,7 @@ qx.Class.define('vv.data.Rpc', {
             var superHandler = function(ret, exc, id) {
                 if (exc) {
                     if (exc.code == 3978) {
-                        var pop = vv.page.Associate.getInstance();
+                        var pop = vv.popup.Associate.getInstance();
 
                         pop.addListenerOnce('associated', function() {
                             origArguments.callee.apply(origThis, origArguments);

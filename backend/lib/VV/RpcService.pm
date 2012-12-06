@@ -2,6 +2,7 @@ package VV::RpcService;
 
 use Mojo::Base -base;
 use VV::Exception qw(mkerror);
+use VV::Store;
 
 =head1 NAME
 

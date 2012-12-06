@@ -20,7 +20,7 @@ EXTRA_DIST = config.json Manifest.json source/index.html $(shell find source/cla
 
 if BUILD_QOOXDOO_APP
 
-GENTARGETS := lint pretty migration translation api
+GENTARGETS := lint pretty migration translation api source-ios source-android info
 
 .PHONY: $(GENTARGETS) source source-full
 
@@ -28,9 +28,6 @@ source: source/script/vv.js source/index.html
 
 $(GENTARGETS):
 	$(QOOXDOO_PATH)/tool/bin/generator.py -m QOOXDOO_PATH:$(QOOXDOO_PATH) -m CACHE:./cache $@
-
-source/index.html: Makefile
-	$(PERL) -i -p -e 's{href=".+?resource/qx/mobile/css}{href="$(QOOXDOO_PATH)/framework/source/resource/qx/mobile/css}g' source/index.html
 	
 source/script/vv.js: $(shell find source/class/ -name "*.js")
 	$(QOOXDOO_PATH)/tool/bin/generator.py -m QOOXDOO_PATH:$(QOOXDOO_PATH) -m CACHE:./cache source-hybrid

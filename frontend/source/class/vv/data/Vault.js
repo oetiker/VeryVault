@@ -21,20 +21,19 @@ var key;
 qx.Class.define("vv.data.Vault", {
     extend : qx.core.Object,
     type : 'singleton',
-
+    include: [qx.locale.MTranslation],
     construct : function() {
         this.base(arguments);
-        data = [];
         key = null;
 
         if (!localStorage) {
             throw new Error(this.tr("Sorry, this browser does not support localStorage. VeryVault requires localStorage to work."));
         }
 
-        var as = this.__askPass = new vv.page.AskSecret();
+        var as = this.__askPass = new vv.popup.AskSecret();
         as.addListener('key', this._tryUnlockEvent, this);
         as.addListener('reset', this._clearLocalStorageEvent, this);
-        var ans = this.__askNewPass = new vv.page.AskNewSecret();
+        var ans = this.__askNewPass = new vv.popup.AskNewSecret();
         ans.addListener('key', this._setNewKeyEvent, this);
     },
 
@@ -81,7 +80,7 @@ qx.Class.define("vv.data.Vault", {
             var cache_in = localStorage.getItem(this.__storeName);
 
             try {
-                cache = sjcl.decrypt(newKey, cfg_in);
+                cache = sjcl.decrypt(newKey, cache_in);
             }
             catch(err) {
                 vv.popup.MsgBox.getInstance().error(this.tr('Wrong Key'), this.tr('The key does not work. Try again.'));
@@ -90,7 +89,6 @@ qx.Class.define("vv.data.Vault", {
 
             key = newKey;
             this._fetchConfig();
-            this._updateItems();
         },
 
 
@@ -102,7 +100,6 @@ qx.Class.define("vv.data.Vault", {
         _setNewKeyEvent : function(e) {
             key = e.getData();
             this._fetchConfig();
-            this._updateItems();
         },
 
 
@@ -219,7 +216,7 @@ qx.Class.define("vv.data.Vault", {
 
                 rpc.callAsyncSmart(function(ret) {
                     ret.forEach(function(item) {
-                        if (item.savetime > config.lastSync) {
+                        if (item.savetime > cache.lastSync) {
                             cache.lastSync = item.savetime;
                         }
 
@@ -227,7 +224,7 @@ qx.Class.define("vv.data.Vault", {
 
                         if (localItem) {
                             if (item.rmtime && localItem.savetime < item.rmtime) {
-                                delete data[item.id];
+                                delete cache.data[item.id];
                                 return;
                             }
 
@@ -237,7 +234,7 @@ qx.Class.define("vv.data.Vault", {
                             }
                         }
 
-                        data[item.id] = item;
+                        cache.data[item.id] = item;
                     });
 
                     that.__save();
@@ -265,7 +262,7 @@ qx.Class.define("vv.data.Vault", {
                 var item = cache.data[key];
 
                 if (item.type == store) {
-                    ret.push(item);
+                    data.push(item);
                 }
             }
 

@@ -20,7 +20,8 @@ qx.Class.define("vv.page.Detail", {
         this.__type = itemType;
         this.__cfg = vv.data.Vault.getInstance().getConfig();
         var item = this.__itemCfg = this.__cfg.items[itemType];
-
+        var mgr = vv.page.Manager.getInstance();
+        mgr.addDetail(this);
         this.set({
             title          : item.name,
             showButton     : false,
@@ -57,8 +58,7 @@ qx.Class.define("vv.page.Detail", {
          */
         _start : function() {
             var vault = vv.data.Vault.getInstance();
-
-            vault.getItems(this.__type, function(data) {
+            vault.getItems(this.__type, function(model) {
                 this.__list.setModel(model);
             }, this);
         },

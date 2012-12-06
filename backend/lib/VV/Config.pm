@@ -147,7 +147,7 @@ ${E}head1 SYNOPSIS
 
  icon = apps/preferences-security
  name = Passwords
- # public_access = rw | ro | cr | no (default)
+ # shared_access = rw | ro | cr | no (default)
  shared_access = no
  # the item object holds all the items elements
  # for encrypted (cr) items the element content will be replaces

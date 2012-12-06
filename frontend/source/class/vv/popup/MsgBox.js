@@ -123,6 +123,15 @@ qx.Class.define("vv.popup.MsgBox", {
          */
         warn : function(title, text) {
             this.__show("qx/icon/Tango/22/status/dialog-warning.png", title, text);
+        },
+        /* positioning is a bit broken on 2.0.0 */
+        show: function(){
+            this.base(arguments);
+            this._updatePosition();
+            this._updatePosition();
+            this._updatePosition();
+            this._updatePosition();
         }
+
     }
 });
